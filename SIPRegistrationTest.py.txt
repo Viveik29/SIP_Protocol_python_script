@@ -1,0 +1,88 @@
+#!/usr/bin/python
+
+from SIP3261Msg import SIP3261Message
+import socket
+
+SIP3261MsgConstructorObj = SIP3261Message()
+SIP3261MsgConstructorObj2 = SIP3261Message()
+
+SIPRegistrationToSentToSUT = ""
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.RequestLineConstructor(Method="Registration", RequestURI="sip:tcloudtech.com")
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.viafieldConstructor(Transport="UDP" , FQDN="master@tcloudtech.com",Parameters={'rport':None,'branch': "fskjhgjhakjhkgh"})
+#SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.CRLF
+
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.fromfieldConstructor(UANAME = "Ivan", URI="Ivan@Verso.com" ,Parameters={'tag':"1516659370"})
+#SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.CRLF
+#IN SIP EVERY THING IS STRING...
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.TofieldConstructor(UANAME = "Ivan", URI="sip:Ivan@Verso.com" )
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.contactfieldConstructor(UANAME = "Ivan", URI="Ivan@200.57.7.205:5061" )
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.CallIDfieldConstructor(Callid ="65bhgfjhb665")
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.CseqfieldConstructor(sno ="58763", Method = "REGISTER")
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.ExpiresfieldConstructor(Expire='1800')
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.MaxforwardfieldConstructor(Maxforward='70')
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.UserAgentfieldConstructor(UA='tcloud user agent version 1135')
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.ContentLengthfieldConstructor(ContentLength='0')
+SIPRegistrationToSentToSUT += SIP3261MsgConstructorObj.CRLF
+print SIP3261MsgConstructorObj
+#print dir()
+print SIPRegistrationToSentToSUT
+
+
+
+
+SIP3261MsgConstructorObj2 = SIP3261Message()
+
+SIPRegistrationexpectationfromSUT = ""
+
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.StatusLineConstructor(Statuscode='200',Reasonphrase='ok')
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.viafieldConstructor(Transport="UDP" , FQDN="master@tcloudtech.com",Parameters={'rport':None,'branch': "fskjhgjhakjhkgh",'received':"10.0.3.15"})
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.fromfieldConstructor(UANAME = "Ivan", URI="Ivan@Verso.com" ,Parameters={'tag':"1516659370"})
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.TofieldConstructor(UANAME = "Ivan", URI="sip:Ivan@Verso.com" )
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.contactfieldConstructor(UANAME = "Ivan", URI="Ivan@200.57.7.205:5061" )
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.CallIDfieldConstructor(Callid ="65bhgfjhb665")
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.CseqfieldConstructor(sno ="58763", Method = "REGISTER")
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.ExpiresfieldConstructor(Expire='18')
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.MaxforwardfieldConstructor(Maxforward='70')
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.UserAgentfieldConstructor(UA='tcloud user agent version 1135')
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.ContentLengthfieldConstructor(ContentLength='0')
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.AllowfieldConstructor(allowedmethodlist=['INVITE','BYE','OPTIONS','CANCEL','PRACK','REFER'])
+SIPRegistrationexpectationfromSUT += SIP3261MsgConstructorObj2.CRLF
+
+
+
+print SIP3261MsgConstructorObj2
+#print dir()
+print SIPRegistrationexpectationfromSUT
+
+
+
+SIPTesterIP = "10.0.2.15"
+SIPTesterPort = 5060
+SIPTester = (SIPTesterIP ,SIPTesterPort)
+SIPTesterAPPBufferSize = 65535
+
+SIPTesterSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+SIPTesterSocket.bind(SIPTester)
+
+SIPSUTIP = "10.0.3.15"
+SIPSUTPort = 5060
+SIPSUT = (SIPSUTIP , SIPSUTPort)
+
+SIPTesterSocket.sendto(SIPRegistrationToSentToSUT , SIPSUT)
+
+SIPRegistrationOKReceivedfromSUT , SIPSUT = SIPTesterSocket.recvfrom(SIPTesterAPPBufferSize)
+
+def MessageValidation(EXPECTED,RECEIVED):
+	if EXPECTED == RECEIVED:
+		return "Test case Passed"
+	else:
+		EXPECTEDSPLITS = EXPECTED.splitlines()
+		RECEIVEDSPLITS = RECEIVED.splitlines()
+		print EXPECTEDSPLITS
+		print RECEIVEDSPLITS
+
+
+print MessageValidation(SIPRegistrationexpectationfromSUT,SIPRegistrationOKReceivedfromSUT)
+
+

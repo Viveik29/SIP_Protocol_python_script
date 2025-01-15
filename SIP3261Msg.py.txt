@@ -1,0 +1,146 @@
+#!/usr/bin/python
+
+class SIP3261Message():
+	def __init__(self):
+		self.SP = " "
+		self.C = ":"
+		self.SC = ";"
+		self.CRLF = "\r\n"
+		self.EQ = "="
+		self.Version = "SIP/2.0"
+		self.LT = "<"
+		self.GT = ">"
+		self.CO = '"'
+		self.Comma = ","
+	
+		
+	def RequestLineConstructor(self, Method , RequestURI):
+		self.RequestLine = Method + self.SP + RequestURI + self.SP + self.Version + self.CRLF
+		return self.RequestLine
+	def StatusLineConstructor(self, Statuscode, Reasonphrase):
+		self.StatusLine = Statuscode + self.SP + Reasonphrase + self.CRLF
+		return self.StatusLine
+
+	def viafieldConstructor(self, Transport , FQDN , Parameters=None):
+		self.viafield = "via" + self.C + self.SP + self.Version + "/" + self.SP + Transport + self.SP + FQDN 
+		if Parameters == None:
+			pass
+		else:
+			for EveryParameter in Parameters:#using this condition bcoz some parameter have value and some have not
+				if Parameters[EveryParameter] == None:
+					self.viafield += self.SC + EveryParameter
+				else:
+					self.viafield += self.SC + EveryParameter + self.EQ + Parameters[EveryParameter]
+
+		self.viafield+= self.CRLF
+		return self.viafield
+
+	def fromfieldConstructor(self, UANAME, URI, Parameters=None):
+		self.fromfield = "From" + self.C + self.SP + UANAME + self.SP +self.LT + 'sip'+self.C+URI+self.GT 
+		
+		if Parameters == None:
+			pass
+		else:
+			for EveryParameter in Parameters:#using this condition bcoz some parameter have value and some have not
+				if Parameters[EveryParameter] == None:
+					self.fromfield += self.SC + EveryParameter
+				else:
+					self.fromfield += self.SC + EveryParameter + self.EQ + Parameters[EveryParameter]
+
+		self.fromfield += self.CRLF
+		return self.fromfield
+	def TofieldConstructor(self, UANAME, URI, Parameters=None):
+		self.Tofield = "To" + self.C + self.SP + UANAME +self.SP + self.LT+URI+self.GT
+		if Parameters == None:
+			pass
+		else:
+			for EveryParameter in Parameters:#using this condition bcoz some parameter have value and some have not
+				if Parameters[EveryParameter] == None:
+					self.Tofield += self.SC + EveryParameter
+				else:
+					self.Tofield += self.SC + EveryParameter + self.EQ + Parameters[EveryParameter]
+ 		self.Tofield += self.CRLF
+		return self.Tofield
+
+	def contactfieldConstructor(self, UANAME, URI, Parameters=None):
+		self.contactfield = "Contact" + self.C + self.SP +self.CO + UANAME +self.CO + self.SP +self.LT + 'sip'+self.C+URI+self.GT 
+		
+		if Parameters == None:
+			pass
+		else:
+			for EveryParameter in Parameters:#using this condition bcoz some parameter have value and some have not
+				if Parameters[EveryParameter] == None:
+					self.contactfield += self.SC + EveryParameter
+				else:
+					self.contactfield += self.SC + EveryParameter + self.EQ + Parameters[EveryParameter]
+
+		self.contactfield += self.CRLF
+		return self.contactfield
+
+				
+
+	def CallIDfieldConstructor(self, Callid,  Parameters=None):
+		self.CallIDfield = "CallID"+self.C + self.SP +Callid
+		
+		if Parameters == None:
+			pass
+		else:
+			for EveryParameter in Parameters:#using this condition bcoz some parameter have value and some have not
+				if Parameters[EveryParameter] == None:
+					self.CallIDfield += self.SC + EveryParameter
+				else:
+					self.CallIDfield += self.SC + EveryParameter + self.EQ + Parameters[EveryParameter]
+
+		self.CallIDfield += self.CRLF
+		return self.CallIDfield
+
+	def CseqfieldConstructor(self, sno, Method,  Parameters=None):
+			self.Cseqfield = "Cseq"+self.C + self.SP + sno + self.SP + Method
+			
+			if Parameters == None:
+				pass
+			else:
+				for EveryParameter in Parameters:#using this condition bcoz some parameter have value and some have not
+					if Parameters[EveryParameter] == None:
+						self.Cseqfield += self.SC + EveryParameter
+					else:
+						self.Cseqfield += self.SC + EveryParameter + self.EQ + Parameters[EveryParameter]
+
+			self.Cseqfield += self.CRLF
+			return self.Cseqfield
+
+	def ExpiresfieldConstructor(self, Expire):
+			self.Expires = "Expires"+self.C + self.SP + Expire
+
+			self.Expires += self.CRLF
+			return self.Expires
+	def MaxforwardfieldConstructor(self, Maxforward):
+			self.Maxforward = "Max-forwards"+self.C + self.SP + Maxforward
+
+			self.Maxforward += self.CRLF
+			return self.Maxforward
+
+	def UserAgentfieldConstructor(self, UA):
+			self.UserAgent = "User-Agent" + self.C + self.SP + UA
+
+			self.UserAgent += self.CRLF
+			return self.UserAgent
+
+	def ContentLengthfieldConstructor(self, ContentLength):
+			self.ContentLengthfield = "Content-Length" + self.C + self.SP + ContentLength
+
+			self.ContentLengthfield += self.CRLF
+			return self.ContentLengthfield
+
+	def AllowfieldConstructor(self, allowedmethodlist = None):
+		self.Allowfield = "Allow" + self.C + self.SP
+		if allowedmethodlist == None:
+			pass
+		else:
+			for EveryMethod in allowedmethodlist:
+				self.Allowfield +=  EveryMethod + self.Comma+self.SP
+
+		self.Allowfield += self.CRLF
+		return self.Allowfield 
+		
+
